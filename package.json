@@ -1,5 +1,5 @@
 {
-  "name": "@brightsign/bs-ui-template",
+  "name": "autorun-ts-last-chance",
   "version": "0.1.0",
   "private": true,
   "author": "BrightSign LLC",
@@ -111,7 +111,7 @@
     "package-link": "npm link typescript && npm link webpack",
     "package-install": "npm install --only=production",
     "build-browser": "cross-env PLATFORM=browser node scripts/build.js",
-    "build-electron": "cross-env PLATFORM=electron node scripts/build.js",
+    "build-electron": "cross-env PLATFORM=electron node --max-old-space-size=8192 scripts/build.js",
     "build-standalone": "cross-env PLATFORM=standalone node scripts/build.js",
     "package-submodule": "node scripts/clean.js && npm run build-standalone && npm run build-browser && npm run build-electron",
     "test": "node scripts/test.js --watchAll"
