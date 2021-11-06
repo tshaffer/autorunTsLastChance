@@ -5,16 +5,11 @@ import {
   combineReducers
 } from 'redux';
 import { isNil } from 'lodash';
-import { BsUiModelState } from '../type';
+import { BsPpModelState } from '../type';
 import {
-  BSUIMODEL_BATCH,
-  BsUiModelBaseAction,
-  BsUiModelBatchAction,
+  BsPpModelBaseAction,
 } from './baseAction';
-import {
-  templateReducer,
-  isValidTemplateState,
-} from './template';
+import { presentationDataReducer } from './presentation';
 
 // -----------------------------------------------------------------------
 // Defaults
@@ -26,37 +21,39 @@ import {
 // Reducers
 // -----------------------------------------------------------------------
 
-export type BsUiReducer = Reducer<BsUiModelState>;
-const enableBatching = (
-    reduce: (state: BsUiModelState, action: BsUiModelBaseAction | BsUiModelBatchAction) => BsUiModelState,
+export type BsUiReducer = Reducer<BsPpModelState>;
+export const enableBatching = (
+  reduce: (state: BsPpModelState, action: BsPpModelBaseAction) => BsPpModelState,
 ): BsUiReducer => {
   return function batchingReducer(
-    state: BsUiModelState,
-    action: BsUiModelBaseAction | BsUiModelBatchAction,
-  ): BsUiModelState {
+    state: BsPpModelState,
+    action: BsPpModelBaseAction,
+  ): BsPpModelState {
     switch (action.type) {
-      case BSUIMODEL_BATCH:
-        return (action as BsUiModelBatchAction).payload.reduce(batchingReducer, state);
       default:
         return reduce(state, action);
     }
   };
 };
 
-export const bsUiModelReducer: BsUiReducer = enableBatching(combineReducers<BsUiModelState>({
-  template: templateReducer,
+export const bsPpReducer = enableBatching(combineReducers<BsPpModelState>({
+  presentationData: presentationDataReducer,
 }));
 
 // -----------------------------------------------------------------------
 // Validators
 // -----------------------------------------------------------------------
 
-export const isValidBsUiModelState = (state: any): boolean => {
-  return !isNil(state)
-    && state.hasOwnProperty('template') && isValidTemplateState(state.template);
-};
+/** @internal */
+/** @private */
+// TEDTODO - requires further development
+export function isValidBsPpModelState(state: any): boolean {
+  return !isNil(state);
+}
 
-export const isValidBsUiModelStateShallow = (state: any): boolean => {
-  return !isNil(state)
-    && state.hasOwnProperty('template');
-};
+/** @internal */
+/** @private */
+// TEDTODO - requires further development
+export function isValidBsPpModelStateShallow(state: any): boolean {
+  return !isNil(state);
+}
