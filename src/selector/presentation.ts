@@ -127,7 +127,7 @@ function getPoolFilePath(state: BsPpState, fileName: string): string {
   return getPoolAssetFiles(state)[fileName];
 }
 
-export const getSyncSpecFile = (state: BsPpState, fileName: string): Promise<object> => {
+export const getSyncSpecFile = (state: BsPpState, fileName: string): Promise<any> => {
   state = bsPpStateFromState(state);
 
   const syncSpecFileMap = getSyncSpecFileMap(state);
