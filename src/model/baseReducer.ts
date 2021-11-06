@@ -9,6 +9,7 @@ import { BsPpModelState } from '../type';
 import {
   BsPpModelBaseAction,
 } from './baseAction';
+import { hsmReducer } from './hsm';
 import { presentationDataReducer } from './presentation';
 
 // -----------------------------------------------------------------------
@@ -37,6 +38,7 @@ export const enableBatching = (
 };
 
 export const bsPpReducer = enableBatching(combineReducers<BsPpModelState>({
+  hsmState: hsmReducer,
   presentationData: presentationDataReducer,
 }));
 

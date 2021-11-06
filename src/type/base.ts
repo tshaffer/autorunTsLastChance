@@ -1,7 +1,8 @@
 /** @module Types:base */
 
-import { BaContextModelState } from '@brightsign/ba-context-model';
 import { DmState } from '@brightsign/bsdatamodel';
+import { BaContextModelState } from '@brightsign/ba-context-model';
+import { HsmState } from './hsm';
 
 import { PresentationDataState } from './presentation';
 
@@ -18,6 +19,16 @@ export type DeepPartial<T> = {
   [P in keyof T]?: DeepPartial<T[P]>;
 };
 
+export interface LUT { [key: string]: any; }
+
+export interface BsPpBaseObject {
+  id: string;
+}
+
+export interface BsPpMap<T extends BsPpBaseObject> {
+  [id: string]: T;    // really '[id:BsDmId]: T;' -- but Typescript doesn't like that, even though BsDmId = string
+}
+
 export interface FileLUT { [fileName: string]: string; }
 
 export interface BsPpState {
@@ -27,7 +38,7 @@ export interface BsPpState {
 }
 
 export interface BsPpModelState {
-  // hsmState: HsmState;
+  hsmState: HsmState;
   presentationData: PresentationDataState;
   // playback: PlaybackState;
   // arDataFeeds: ArDataFeedMap;
@@ -42,7 +53,7 @@ export const bsPpStateFromState = (state: any): BsPpState => {
       bsPlayer: {
         // playback: bsPpModelState.playback,
         presentationData: bsPpModelState.presentationData,
-        // hsmState: bsPpModelState.hsmState,
+        hsmState: bsPpModelState.hsmState,
         // arDataFeeds: bsPpModelState.arDataFeeds,
       }
     };

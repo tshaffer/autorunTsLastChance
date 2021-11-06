@@ -2,4 +2,5 @@
 
 export * from './baseAction';
 export * from './baseReducer';
+export * from './hsm';
 export * from './presentation';
