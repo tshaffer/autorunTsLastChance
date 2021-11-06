@@ -23,14 +23,14 @@ import { BsAssetLocator } from '@brightsign/bscore';
 
 /** @private */
 export interface BsPpProps {
-    autoschedule: PpSchedule | null;
     bsdm: DmState;
+    onInitPresentation: () => BsPpVoidThunkAction;
 }
-class BsPpComponent extends React.Component<BsPpProps> {
+class BsPpComponent extends React.Component<any> {
     componentDidMount(): void;
     render(): JSX.Element;
 }
-export const BsPp: import("react-redux").ConnectedComponent<typeof BsPpComponent, Pick<React.ClassAttributes<BsPpComponent> & BsPpProps, "ref" | "key">>;
+export const BsPp: import("react-redux").ConnectedComponent<typeof BsPpComponent, Pick<any, never>>;
 export {};
 
 export const initPresentation: () => BsPpVoidThunkAction;

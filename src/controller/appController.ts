@@ -2,19 +2,23 @@
 // import isomorphicPath from 'isomorphic-path';
 // import * as fs from 'fs-extra';
 
-// import {
-//   BsPpState,
-//   RawSyncSpec,
-//   PpSchedule,
-//   SyncSpecFileMap,
-//   bsPpStateFromState,
-//   RuntimeEnvironment,
-// } from '../type';
+import {
+  BsPpState, bsPpStateFromState,
+  //   RawSyncSpec,
+  //   PpSchedule,
+  //   SyncSpecFileMap,
+  //   bsPpStateFromState,
+  //   RuntimeEnvironment,
+} from '../type';
 import {
   BsPpDispatch,
-  // BsPpVoidPromiseThunkAction,
+  BsPpVoidPromiseThunkAction,
   BsPpVoidThunkAction,
+  updatePresentationSrcDirectory,
+  updateRuntimeEnvironment,
+  updateScreenDimensions,
 } from '../model';
+import { RuntimeEnvironment } from '../type';
 
 // import {
 //   updateRuntimeEnvironment,
@@ -23,14 +27,14 @@ import {
 //   updatePresentationAutoschedule,
 //   updateScreenDimensions
 // } from '../model/presentation';
-// import {
-//   getRuntimeEnvironment,
+import {
+  getRuntimeEnvironment,
 //   getSrcDirectory,
 //   getSyncSpecFile,
 //   getAutoschedule,
 //   getSyncSpecFileMap,
 //   getSyncSpecReferencedFile
-// } from '../selector';
+} from '../selector';
 // import { launchHsm } from './hsmController';
 // import { DmSignState, dmOpenSign } from '@brightsign/bsdatamodel';
 // import { baCmGetPresentationLocator } from '@brightsign/ba-context-model';
@@ -39,65 +43,69 @@ import {
 export const initPresentation = (): BsPpVoidThunkAction => {
   return ((dispatch: BsPpDispatch) => {
     console.log('initPresentation');
-    // dispatch(loadPresentationData()).then(() => {
-    //   dispatch(launchHsm() as any);
-    // });
+    dispatch(loadPresentationData()).then(() => {
+      console.log('return from loadPresentationData');
+      //   dispatch(launchHsm() as any);
+    });
   });
 };
 
-// const loadPresentationData = (): BsPpVoidPromiseThunkAction => {
-//   return ((dispatch: BsPpDispatch) => {
-//     dispatch(setRuntimeEnvironment());
-//     dispatch(setSrcDirectory());
-//     return dispatch(setSyncSpec())
-//       .then(() => {
-//         return dispatch(setAutoschedule());
-//       });
-//   });
-// };
+const loadPresentationData = (): BsPpVoidPromiseThunkAction => {
+  return ((dispatch: BsPpDispatch) => {
+    dispatch(setRuntimeEnvironment());
+    dispatch(setSrcDirectory());
+    return Promise.resolve();
+    // return dispatch(setSyncSpec())
+    //   .then(() => {
+    //     return dispatch(setAutoschedule());
+    //   });
+  });
+};
 
-// const setRuntimeEnvironment = (): BsPpVoidThunkAction => {
-//   return ((dispatch: BsPpDispatch) => {
-//     // const runtimeEnvironment: RuntimeEnvironment = RuntimeEnvironment.BaconPreview;
-//     let runtimeEnvironment: RuntimeEnvironment = RuntimeEnvironment.Dev;
-//     try {
-//       const gpio = new BSControlPort('BrightSign') as BSControlPort;
-//       console.log('create controlPort: ');
-//       console.log(gpio);
-//       runtimeEnvironment = RuntimeEnvironment.BrightSign;
-//     } catch (e) {
-//       // runtimeEnvironment = 'Desktop';
-//       console.log('failed to create controlPort: ');
-//     }
-//     dispatch(updateRuntimeEnvironment(runtimeEnvironment));
-//   });
-// };
+const setSrcDirectory = (): BsPpVoidThunkAction => {
+  return ((dispatch: BsPpDispatch, getState: () => BsPpState) => {
 
-// const setSrcDirectory = (): BsPpVoidThunkAction => {
-//   return ((dispatch: BsPpDispatch, getState: () => BsPpState) => {
+    const process = require('process');
 
-//     const process = require('process');
+    const bsPpState: BsPpState = bsPpStateFromState(getState());
+    const runtimeEnvironment: RuntimeEnvironment = getRuntimeEnvironment(bsPpState);
+    let srcDirectory = '';
+    if (runtimeEnvironment === RuntimeEnvironment.Dev) {
+      require('dotenv').config();
 
-//     const bsPpState: BsPpState = bsPpStateFromState(getState());
-//     const runtimeEnvironment: RuntimeEnvironment = getRuntimeEnvironment(bsPpState);
-//     let srcDirectory = '';
-//     if (runtimeEnvironment === RuntimeEnvironment.Dev) {
-//       require('dotenv').config();
+      dispatch(updateScreenDimensions({
+        width: process.env.SCREEN_WIDTH,
+        height: process.env.SCREEN_HEIGHT,
+      }));
 
-//       dispatch(updateScreenDimensions({
-//         width: process.env.SCREEN_WIDTH,
-//         height: process.env.SCREEN_HEIGHT,
-//       }));
+      srcDirectory = process.env.SOURCE_DIRECTORY;
+    } else if (runtimeEnvironment === RuntimeEnvironment.BaconPreview) {
+      srcDirectory = '/Users/tedshaffer/Desktop/autotron-2020';
+    } else {
+      process.chdir('/storage/sd');
+    }
+    dispatch(updatePresentationSrcDirectory(srcDirectory));
+  });
+};
 
-//       srcDirectory = process.env.SOURCE_DIRECTORY;
-//     } else if (runtimeEnvironment === RuntimeEnvironment.BaconPreview) {
-//       srcDirectory = '/Users/tedshaffer/Desktop/autotron-2020';
-//     } else {
-//       process.chdir('/storage/sd');
-//     }
-//     dispatch(updatePresentationSrcDirectory(srcDirectory));
-//   });
-// };
+
+const setRuntimeEnvironment = (): BsPpVoidThunkAction => {
+  return ((dispatch: BsPpDispatch) => {
+    // const runtimeEnvironment: RuntimeEnvironment = RuntimeEnvironment.BaconPreview;
+    let runtimeEnvironment: RuntimeEnvironment = RuntimeEnvironment.Dev;
+    // try {
+    //   const gpio = new BSControlPort('BrightSign') as BSControlPort;
+    //   console.log('create controlPort: ');
+    //   console.log(gpio);
+    //   runtimeEnvironment = RuntimeEnvironment.BrightSign;
+    // } catch (e) {
+    //   // runtimeEnvironment = 'Desktop';
+    //   console.log('failed to create controlPort: ');
+    // }
+    dispatch(updateRuntimeEnvironment(runtimeEnvironment));
+  });
+};
+
 
 // const setSyncSpec = (): BsPpVoidPromiseThunkAction => {
 //   return ((dispatch: BsPpDispatch, getState: () => any) => {

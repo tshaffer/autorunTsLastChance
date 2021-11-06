@@ -1,11 +1,18 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { createStore, applyMiddleware } from 'redux';
+import {
+  applyMiddleware,
+  combineReducers,
+  createStore,
+} from 'redux';
 import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 
+import { bsDmReducer } from '@brightsign/bsdatamodel';
+import { baCmReducer } from '@brightsign/ba-context-model';
 
+import { BsPpState } from './type/base';
 import { bsPpReducer } from './model';
 // import { BsUiModelState } from './type';
 import './asset/bootstrap.css';
@@ -19,11 +26,24 @@ import { BsPp } from './component/BsPp';
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
 
-const store = createStore(bsPpReducer, composeWithDevTools(applyMiddleware(thunk)));
+const reducers = combineReducers<BsPpState>({
+  bacdm: baCmReducer,
+  bsdm: bsDmReducer,
+  bsPlayer: bsPpReducer,
+});
+
+// const store = createStore(bsPpReducer, composeWithDevTools(applyMiddleware(thunk)));
+const store = createStore(
+  reducers,
+  composeWithDevTools(
+    applyMiddleware(
+      thunk,
+    ),
+  ));
 
 ReactDOM.render(
   <Provider store={store}>
-      <BsPp />
+    <BsPp />
   </Provider>,
   document.getElementById('root') as HTMLElement
 );

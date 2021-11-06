@@ -3,11 +3,11 @@ import { connect } from 'react-redux';
 import { Dispatch, bindActionCreators } from 'redux';
 
 import { DmState } from '@brightsign/bsdatamodel';
-// import {
-//   initPresentation,
-// } from '../controller/appController';
 import {
-  PpSchedule,
+  initPresentation,
+} from '../controller/appController';
+import {
+  // PpSchedule,
   // HsmMap,
   BsPpState,
   // bsPpStateFromState,
@@ -16,7 +16,7 @@ import {
 // import { getAutoschedule, getHsmMap } from '../selector';
 // import { Sign } from './sign';
 import {
-  // BsPpVoidThunkAction,
+  BsPpVoidThunkAction,
 } from '../model';
 
 // -----------------------------------------------------------------------
@@ -26,10 +26,10 @@ import {
 /** @internal */
 /** @private */
 export interface BsPpProps {
-  autoschedule: PpSchedule | null;
+  // autoschedule: PpSchedule | null;
   bsdm: DmState;
   // hsmMap: HsmMap;
-  // onInitPresentation: () => BsPpVoidThunkAction;
+  onInitPresentation: () => BsPpVoidThunkAction;
 }
 
 // -----------------------------------------------------------------------
@@ -40,9 +40,10 @@ export interface BsPpProps {
 // Component
 // -----------------------------------------------------------------------
 
-class BsPpComponent extends React.Component<BsPpProps> {
+// class BsPpComponent extends React.Component<BsPpProps> {
+class BsPpComponent extends React.Component<any> {
   componentDidMount() {
-    // this.props.onInitPresentation();
+    this.props.onInitPresentation();
   }
 
   render() {
@@ -94,9 +95,9 @@ function mapStateToProps(state: BsPpState): Partial<BsPpProps> {
   };
 }
 
-const mapDispatchToProps = (dispatch: Dispatch<any>) => {
+const mapDispatchToProps = (dispatch: Dispatch<any>): any => {
   return bindActionCreators({
-    // onInitPresentation: initPresentation,
+    onInitPresentation: initPresentation,
   }, dispatch);
 };
 
