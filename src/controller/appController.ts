@@ -4,9 +4,9 @@ import * as fs from 'fs-extra';
 
 import {
   BsPpState, bsPpStateFromState,
-    RawSyncSpec,
-    PpSchedule,
-    SyncSpecFileMap,
+  RawSyncSpec,
+  PpSchedule,
+  SyncSpecFileMap,
   //   bsPpStateFromState,
   //   RuntimeEnvironment,
 } from '../type';
@@ -22,21 +22,21 @@ import { RuntimeEnvironment } from '../type';
 
 import {
   updatePresentationAutoschedule,
-//   updateRuntimeEnvironment,
-//   updatePresentationSrcDirectory,
+  //   updateRuntimeEnvironment,
+  //   updatePresentationSrcDirectory,
   updatePresentationSyncSpecFileMap,
-//   updatePresentationAutoschedule,
-//   updateScreenDimensions
+  //   updatePresentationAutoschedule,
+  //   updateScreenDimensions
 } from '../model/presentation';
 import {
   getRuntimeEnvironment,
   getSrcDirectory,
   getSyncSpecFile,
-//   getAutoschedule,
-//   getSyncSpecFileMap,
-//   getSyncSpecReferencedFile
+  //   getAutoschedule,
+  //   getSyncSpecFileMap,
+  //   getSyncSpecReferencedFile
 } from '../selector';
-// import { launchHsm } from './hsmController';
+import { launchHsm } from './hsmController';
 // import { DmSignState, dmOpenSign } from '@brightsign/bsdatamodel';
 // import { baCmGetPresentationLocator } from '@brightsign/ba-context-model';
 // import { BsAssetLocator } from '@brightsign/bscore';
@@ -46,7 +46,7 @@ export const initPresentation = (): BsPpVoidThunkAction => {
     console.log('initPresentation');
     dispatch(loadPresentationData()).then(() => {
       console.log('return from loadPresentationData');
-      //   dispatch(launchHsm() as any);
+      dispatch(launchHsm() as any);
     });
   });
 };
@@ -57,10 +57,7 @@ const loadPresentationData = (): BsPpVoidPromiseThunkAction => {
     dispatch(setSrcDirectory());
     return dispatch(setSyncSpec())
       .then(() => {
-        const p = dispatch(setAutoschedule());
-        console.log('return from setAutoschedule');
-        console.log(getState());
-        return p;
+        return dispatch(setAutoschedule());
       });
   });
 };
@@ -133,7 +130,7 @@ const setAutoschedule = (): BsPpVoidPromiseThunkAction => {
       getSyncSpecFile(bsPpState, 'autoschedule.json')
         .then((autoSchedule: PpSchedule) => {
           dispatch(updatePresentationAutoschedule(autoSchedule));
-          return Promise.resolve();
+          return resolve(null);
         });
     });
   });
