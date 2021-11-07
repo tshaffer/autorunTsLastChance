@@ -57,7 +57,7 @@ import {
 // import { createMediaZoneHsm } from './mediaZoneHsm';
 // import { getIsHsmInitialized } from '../../selector';
 // import { addHsmEvent } from '../hsmController';
-// import { openSign } from '../appController';
+import { openSign } from '../appController';
 // import {
 //   DmDataFeedSource,
 //   dmGetDataFeedIdsForSign,
@@ -234,11 +234,9 @@ export const launchSchedulePlayback = (presentationName: string): BsPpVoidPromis
   // console.log('invoke restartPlayback');
 
   return (dispatch: BsPpDispatch, getState: () => BsPpState) => {
-    // const action = openSign(presentationName);
-    // const promise = dispatch(action as any);
-    // return promise;
-    console.log('launchSchedulePlayback');
-    return Promise.resolve();
+    const action = openSign(presentationName);
+    const promise = dispatch(action as any);
+    return promise;
 
     // const autoSchedule: PpSchedule | null = getAutoschedule(bsPpStateFromState(getState()));
     // if (!isNil(autoSchedule)) {

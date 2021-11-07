@@ -32,12 +32,12 @@ import {
   getRuntimeEnvironment,
   getSrcDirectory,
   getSyncSpecFile,
-  //   getAutoschedule,
-  //   getSyncSpecFileMap,
-  //   getSyncSpecReferencedFile
+    getAutoschedule,
+    getSyncSpecFileMap,
+    getSyncSpecReferencedFile
 } from '../selector';
 import { launchHsm } from './hsmController';
-// import { DmSignState, dmOpenSign } from '@brightsign/bsdatamodel';
+import { DmSignState, dmOpenSign } from '@brightsign/bsdatamodel';
 // import { baCmGetPresentationLocator } from '@brightsign/ba-context-model';
 // import { BsAssetLocator } from '@brightsign/bscore';
 
@@ -199,36 +199,36 @@ function readSyncSpec(syncSpecFilePath: string): Promise<RawSyncSpec> {
     });
 }
 
-// const openSignDev = (presentationName: string) => {
+const openSignDev = (presentationName: string) => {
 
-//   return ((dispatch: BsPpDispatch, getState: () => BsPpState) => {
+  return ((dispatch: BsPpDispatch, getState: () => BsPpState) => {
 
-//     const autoSchedule: PpSchedule | null = getAutoschedule(bsPpStateFromState(getState()));
-//     if (!isNil(autoSchedule)) {
-//       //  - only a single scheduled item is currently supported
-//       const scheduledPresentation = autoSchedule!.scheduledPresentations[0];
-//       const presentationToSchedule = scheduledPresentation.presentationToSchedule;
-//       presentationName = presentationToSchedule.name;
-//       const autoplayFileName = presentationName + '.bml';
+    const autoSchedule: PpSchedule | null = getAutoschedule(bsPpStateFromState(getState()));
+    if (!isNil(autoSchedule)) {
+      //  - only a single scheduled item is currently supported
+      const scheduledPresentation = autoSchedule!.scheduledPresentations[0];
+      const presentationToSchedule = scheduledPresentation.presentationToSchedule;
+      presentationName = presentationToSchedule.name;
+      const autoplayFileName = presentationName + '.bml';
 
-//       const syncSpecFileMap = getSyncSpecFileMap(bsPpStateFromState(getState()));
-//       if (!isNil(syncSpecFileMap)) {
-//         return getSyncSpecReferencedFile(
-//           autoplayFileName,
-//           syncSpecFileMap!,
-//           getSrcDirectory(bsPpStateFromState(getState())))
-//           .then((bpfxState: any) => {
-//             const autoPlay: any = bpfxState.bsdm;
-//             const signState = autoPlay as DmSignState;
-//             dispatch(dmOpenSign(signState));
-//           });
-//       }
-//       return Promise.resolve();
-//     } else {
-//       return Promise.resolve();
-//     }
-//   });
-// };
+      const syncSpecFileMap = getSyncSpecFileMap(bsPpStateFromState(getState()));
+      if (!isNil(syncSpecFileMap)) {
+        return getSyncSpecReferencedFile(
+          autoplayFileName,
+          syncSpecFileMap!,
+          getSrcDirectory(bsPpStateFromState(getState())))
+          .then((bpfxState: any) => {
+            const autoPlay: any = bpfxState.bsdm;
+            const signState = autoPlay as DmSignState;
+            dispatch(dmOpenSign(signState));
+          });
+      }
+      return Promise.resolve();
+    } else {
+      return Promise.resolve();
+    }
+  });
+};
 
 // const openSignBaconPreview = (presentationName: string) => {
 //   return ((dispatch: BsPpDispatch, getState: () => BsPpState) => {
@@ -281,24 +281,24 @@ function readSyncSpec(syncSpecFilePath: string): Promise<RawSyncSpec> {
 //   });
 // };
 
-// export const openSign = (presentationName: string) => {
+export const openSign = (presentationName: string) => {
 
-//   return ((dispatch: BsPpDispatch, getState: () => BsPpState) => {
+  return ((dispatch: BsPpDispatch, getState: () => BsPpState) => {
 
-//     const runtimeEnvironment: RuntimeEnvironment = getRuntimeEnvironment(getState());
+    const runtimeEnvironment: RuntimeEnvironment = getRuntimeEnvironment(getState());
 
-//     if (runtimeEnvironment === RuntimeEnvironment.BaconPreview) {
-//       const action = openSignBaconPreview(presentationName);
-//       const promise = dispatch(action as any);
-//       return promise;
-//     } else if (runtimeEnvironment === RuntimeEnvironment.Dev) {
-//       const action = openSignDev(presentationName);
-//       const promise = dispatch(action as any);
-//       return promise;
-//     } else {
-//       const action = openSignBrightSign(presentationName);
-//       const promise = dispatch(action as any);
-//       return promise;
-//     }
-//   });
-// };
+    if (runtimeEnvironment === RuntimeEnvironment.BaconPreview) {
+      // const action = openSignBaconPreview(presentationName);
+      // const promise = dispatch(action as any);
+      // return promise;
+    } else if (runtimeEnvironment === RuntimeEnvironment.Dev) {
+      const action = openSignDev(presentationName);
+      const promise = dispatch(action as any);
+      return promise;
+    } else {
+      // const action = openSignBrightSign(presentationName);
+      // const promise = dispatch(action as any);
+      // return promise;
+    }
+  });
+};
