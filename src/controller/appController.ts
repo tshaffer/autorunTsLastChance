@@ -43,22 +43,37 @@ import { DmSignState, dmOpenSign } from '@brightsign/bsdatamodel';
 
 export const initPresentation = (): BsPpVoidThunkAction => {
   return ((dispatch: BsPpDispatch) => {
-    console.log('initPresentation');
     dispatch(loadPresentationData()).then(() => {
-      console.log('return from loadPresentationData');
       dispatch(launchHsm() as any);
     });
   });
 };
 
 const loadPresentationData = (): BsPpVoidPromiseThunkAction => {
-  return ((dispatch: BsPpDispatch, getState: () => BsPpState) => {
+  return ((dispatch: BsPpDispatch) => {
     dispatch(setRuntimeEnvironment());
     dispatch(setSrcDirectory());
     return dispatch(setSyncSpec())
       .then(() => {
         return dispatch(setAutoschedule());
       });
+  });
+};
+
+const setRuntimeEnvironment = (): BsPpVoidThunkAction => {
+  return ((dispatch: BsPpDispatch) => {
+    // const runtimeEnvironment: RuntimeEnvironment = RuntimeEnvironment.BaconPreview;
+    let runtimeEnvironment: RuntimeEnvironment = RuntimeEnvironment.Dev;
+    // try {
+    //   const gpio = new BSControlPort('BrightSign') as BSControlPort;
+    //   console.log('create controlPort: ');
+    //   console.log(gpio);
+    //   runtimeEnvironment = RuntimeEnvironment.BrightSign;
+    // } catch (e) {
+    //   // runtimeEnvironment = 'Desktop';
+    //   console.log('failed to create controlPort: ');
+    // }
+    dispatch(updateRuntimeEnvironment(runtimeEnvironment));
   });
 };
 
@@ -88,23 +103,6 @@ const setSrcDirectory = (): BsPpVoidThunkAction => {
   });
 };
 
-
-const setRuntimeEnvironment = (): BsPpVoidThunkAction => {
-  return ((dispatch: BsPpDispatch) => {
-    // const runtimeEnvironment: RuntimeEnvironment = RuntimeEnvironment.BaconPreview;
-    let runtimeEnvironment: RuntimeEnvironment = RuntimeEnvironment.Dev;
-    // try {
-    //   const gpio = new BSControlPort('BrightSign') as BSControlPort;
-    //   console.log('create controlPort: ');
-    //   console.log(gpio);
-    //   runtimeEnvironment = RuntimeEnvironment.BrightSign;
-    // } catch (e) {
-    //   // runtimeEnvironment = 'Desktop';
-    //   console.log('failed to create controlPort: ');
-    // }
-    dispatch(updateRuntimeEnvironment(runtimeEnvironment));
-  });
-};
 
 
 const setSyncSpec = (): BsPpVoidPromiseThunkAction => {

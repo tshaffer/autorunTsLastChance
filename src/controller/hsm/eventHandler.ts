@@ -6,7 +6,7 @@ import {
   HStateType,
   HsmType,
   bsPpStateFromState,
-  HsmState,
+  // HsmState,
 } from '../../type';
 import { isNil } from 'lodash';
 import {
@@ -56,10 +56,10 @@ export const hsmInitialPseudoStateHandler = (hsmId: string) => {
         const playerHsmAction = playerHsmGetInitialState();
         return dispatch(playerHsmAction);
       case HsmType.VideoOrImages:
-        console.log('hsmInitialPseudoStateHandler');
-        return Promise.resolve();
-      // const videoOrImagesZoneHsmAction = videoOrImagesZoneHsmGetInitialState(hsmId);
-      // return dispatch(videoOrImagesZoneHsmAction);
+        console.log('eat pizza');
+        break;
+        // const videoOrImagesZoneHsmAction = videoOrImagesZoneHsmGetInitialState(hsmId);
+        // return dispatch(videoOrImagesZoneHsmAction);
       default:
         // TEDTODO
         debugger;
@@ -75,7 +75,7 @@ export const HStateEventHandler = (
 ): any => {
   return ((dispatch: BsPpDispatch, getState: () => BsPpState) => {
 
-    const hsmStateBefore: HsmState = getState().bsPlayer.hsmState;
+    // const hsmStateBefore: HsmState = getState().bsPlayer.hsmState;
 
     let retVal: any = null;
 
@@ -111,17 +111,17 @@ export const HStateEventHandler = (
       }
     }
 
-    console.log('** HStateEventHandler');
-    console.log(hState.type);
-    console.log(event.EventType);
-    console.log(event.EventData);
-    console.log('bsPlayerState before:');
-    console.log(hsmStateBefore);
+    // console.log('** HStateEventHandler');
+    // console.log(hState.type);
+    // console.log(event.EventType);
+    // console.log(event.EventData);
+    // console.log('bsPlayerState before:');
+    // console.log(hsmStateBefore);
 
     // const hStateAfter: HState = getActiveHStateIdByHsmId(getState(), hState.hsmId) as HState;
-    const hsmStateAfter: HsmState = getState().bsPlayer.hsmState;
-    console.log('hsmState after:');
-    console.log(hsmStateAfter);
+    // const hsmStateAfter: HsmState = getState().bsPlayer.hsmState;
+    // console.log('hsmState after:');
+    // console.log(hsmStateAfter);
 
     // logHsmEvent(getState(), hState, hsmStateBefore, event, hStateAfter, hsmStateAfter);
 

@@ -7,13 +7,12 @@ import {
   initPresentation,
 } from '../controller/appController';
 import {
-  // PpSchedule,
-  // HsmMap,
+  PpSchedule,
+  HsmMap,
   BsPpState,
-  // bsPpStateFromState,
-  // bsPpStateFromState,
+  bsPpStateFromState,
 } from '../type';
-// import { getAutoschedule, getHsmMap } from '../selector';
+import { getAutoschedule, getHsmMap } from '../selector';
 // import { Sign } from './sign';
 import {
   BsPpVoidThunkAction,
@@ -26,9 +25,9 @@ import {
 /** @internal */
 /** @private */
 export interface BsPpProps {
-  // autoschedule: PpSchedule | null;
+  autoschedule: PpSchedule | null;
   bsdm: DmState;
-  // hsmMap: HsmMap;
+  hsmMap: HsmMap;
   onInitPresentation: () => BsPpVoidThunkAction;
 }
 
@@ -50,19 +49,19 @@ class BsPpComponent extends React.Component<any> {
 
     let initializationComplete = true;
 
-    // if (this.props.bsdm.zones.allZones.length === 0 ||
-    //   Object.keys(this.props.hsmMap).length === 0) {
-    //   initializationComplete = false;
-    // }
+    if (this.props.bsdm.zones.allZones.length === 0 ||
+      Object.keys(this.props.hsmMap).length === 0) {
+      initializationComplete = false;
+    }
 
-    // for (const hsmId in this.props.hsmMap) {
-    //   if (this.props.hsmMap.hasOwnProperty(hsmId)) {
-    //     const hsm = this.props.hsmMap[hsmId];
-    //     if (!hsm.initialized) {
-    //       initializationComplete = false;
-    //     }
-    //   }
-    // }
+    for (const hsmId in this.props.hsmMap) {
+      if (this.props.hsmMap.hasOwnProperty(hsmId)) {
+        const hsm = this.props.hsmMap[hsmId];
+        if (!hsm.initialized) {
+          initializationComplete = false;
+        }
+      }
+    }
 
     //         <Sign />
 
@@ -86,12 +85,12 @@ class BsPpComponent extends React.Component<any> {
 
 function mapStateToProps(state: BsPpState): Partial<BsPpProps> {
 
-  // const bsPpState: BsPpState = bsPpStateFromState(state);
+  const bsPpState: BsPpState = bsPpStateFromState(state);
 
   return {
     bsdm: state.bsdm,
-    // autoschedule: getAutoschedule(bsPpState),
-    // hsmMap: getHsmMap(bsPpState),
+    autoschedule: getAutoschedule(bsPpState),
+    hsmMap: getHsmMap(bsPpState),
   };
 }
 
