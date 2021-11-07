@@ -13,7 +13,7 @@ import {
   bsPpStateFromState,
 } from '../type';
 import { getAutoschedule, getHsmMap } from '../selector';
-// import { Sign } from './sign';
+import { Sign } from './sign';
 import {
   BsPpVoidThunkAction,
 } from '../model';
@@ -63,11 +63,9 @@ class BsPpComponent extends React.Component<any> {
       }
     }
 
-    //         <Sign />
-
     if (initializationComplete) {
       return (
-        <div>pizza</div>
+        <Sign />
       );
     } else {
       return (

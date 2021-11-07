@@ -15,8 +15,7 @@ import {
   STWaitingEventHandler,
   playerHsmGetInitialState,
 } from './playerHsm';
-// import { initializeVideoOrImagesZoneHsm, videoOrImagesZoneHsmGetInitialState } from './mediaZoneHsm';
-// import { STImageStateEventHandler } from './imageState';
+import { initializeVideoOrImagesZoneHsm, videoOrImagesZoneHsmGetInitialState } from './mediaZoneHsm';
 import {
   getHsmById,
   // getActiveHStateIdByHsmId
@@ -24,7 +23,8 @@ import {
 import {
   BsPpDispatch, BsPpVoidThunkAction,
 } from '../../model';
-// import { STVideoStateEventHandler } from './videoState';
+import { STVideoStateEventHandler } from './videoState';
+import { STImageStateEventHandler } from './imageState';
 // import { STSuperStateEventHandler } from './superState';
 // import { STMrssStateEventHandler } from './mrssState';
 // import { logHsmEvent } from '../../utility/logger';
@@ -37,8 +37,7 @@ export const hsmConstructorFunction = (hsmId: string): BsPpVoidThunkAction => {
         case HsmType.Player:
           break;
         case HsmType.VideoOrImages: {
-          return Promise.resolve();
-          // return dispatch(initializeVideoOrImagesZoneHsm(hsmId));
+          return dispatch(initializeVideoOrImagesZoneHsm(hsmId));
         }
         default:
           debugger;
@@ -56,10 +55,8 @@ export const hsmInitialPseudoStateHandler = (hsmId: string) => {
         const playerHsmAction = playerHsmGetInitialState();
         return dispatch(playerHsmAction);
       case HsmType.VideoOrImages:
-        console.log('eat pizza');
-        break;
-        // const videoOrImagesZoneHsmAction = videoOrImagesZoneHsmGetInitialState(hsmId);
-        // return dispatch(videoOrImagesZoneHsmAction);
+        const videoOrImagesZoneHsmAction = videoOrImagesZoneHsmGetInitialState(hsmId);
+        return dispatch(videoOrImagesZoneHsmAction);
       default:
         // TEDTODO
         debugger;
@@ -93,12 +90,12 @@ export const HStateEventHandler = (
         case HStateType.Waiting:
           retVal = dispatch(STWaitingEventHandler(hState, event, stateData));
           break;
-        // case HStateType.Image:
-        //   retVal = dispatch(STImageStateEventHandler(hState, event, stateData));
-        //   break;
-        // case HStateType.Video:
-        //   retVal = dispatch(STVideoStateEventHandler(hState, event, stateData));
-        //   break;
+        case HStateType.Image:
+          retVal = dispatch(STImageStateEventHandler(hState, event, stateData));
+          break;
+        case HStateType.Video:
+          retVal = dispatch(STVideoStateEventHandler(hState, event, stateData));
+          break;
         // case HStateType.SuperState:
         //   retVal = dispatch(STSuperStateEventHandler(hState, event, stateData));
         //   break;

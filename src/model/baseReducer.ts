@@ -11,6 +11,7 @@ import {
 } from './baseAction';
 import { hsmReducer } from './hsm';
 import { presentationDataReducer } from './presentation';
+import { playbackReducer } from './playback';
 
 // -----------------------------------------------------------------------
 // Defaults
@@ -39,6 +40,7 @@ export const enableBatching = (
 
 export const bsPpReducer = enableBatching(combineReducers<BsPpModelState>({
   hsmState: hsmReducer,
+  playback: playbackReducer,
   presentationData: presentationDataReducer,
 }));
 

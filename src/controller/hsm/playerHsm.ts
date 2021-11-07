@@ -39,7 +39,7 @@ import {
   // getAutoschedule,
   // getSyncSpecFileMap,
   // getSrcDirectory,
-  // getZoneHsmList,
+  getZoneHsmList,
   // getDataFeedById,
   // getSyncSpecReferencedFile,
 } from '../../selector';
@@ -53,10 +53,10 @@ import {
   dmGetZonesForSign,
   // dmFilterDmState,
 } from '@brightsign/bsdatamodel';
-// import { hsmConstructorFunction } from '../hsm/eventHandler';
-// import { createMediaZoneHsm } from './mediaZoneHsm';
-// import { getIsHsmInitialized } from '../../selector';
-// import { addHsmEvent } from '../hsmController';
+import { hsmConstructorFunction } from '../hsm/eventHandler';
+import { createMediaZoneHsm } from './mediaZoneHsm';
+import { getIsHsmInitialized } from '../../selector';
+import { addHsmEvent } from '../hsmController';
 import { openSign } from '../appController';
 // import {
 //   DmDataFeedSource,
@@ -185,10 +185,10 @@ export const STPlayingEventHandler = (
       //     return 'HANDLED';
       //   });
 
-      // // const action: any = launchPresentationPlayback();
-      // // dispatch(action);
+      const action: any = launchPresentationPlayback();
+      dispatch(action);
 
-      // return 'HANDLED';
+      return 'HANDLED';
 
       // } else if (isString(event.EventType) && (event.EventType === 'MRSS_DATA_FEED_LOADED') || (event.EventType === 'CONTENT_DATA_FEED_LOADED') || (event.EventType === 'CONTENT_DATA_FEED_UNCHANGED')) {
 
@@ -276,29 +276,29 @@ export const launchPresentationPlayback = (): BsPpVoidThunkAction => {
     zoneIds.forEach((zoneId: BsDmId) => {
       const bsdmZone: DmZone = dmGetZoneById(bsdm, { id: zoneId }) as DmZone;
       console.log(bsdmZone);
-      // dispatch(createMediaZoneHsm(zoneId, bsdmZone.type.toString(), bsdmZone));
+      dispatch(createMediaZoneHsm(zoneId, bsdmZone.type.toString(), bsdmZone));
     });
 
-    // const promises: Array<Promise<void>> = [];
+    const promises: Array<Promise<void>> = [];
 
-    // const zoneHsmList = getZoneHsmList(bsPpStateFromState(getState()));
-    // for (const zoneHsm of zoneHsmList) {
-    //   dispatch(hsmConstructorFunction(zoneHsm.id));
-    //   const action: BsPpVoidPromiseThunkAction = initializeHsm(zoneHsm.id);
-    //   promises.push(dispatch(action));
-    // }
+    const zoneHsmList = getZoneHsmList(bsPpStateFromState(getState()));
+    for (const zoneHsm of zoneHsmList) {
+      dispatch(hsmConstructorFunction(zoneHsm.id));
+      const action: BsPpVoidPromiseThunkAction = initializeHsm(zoneHsm.id);
+      promises.push(dispatch(action));
+    }
 
-    // Promise.all(promises).then(() => {
-    //   // console.log('startPlayback nearly complete');
-    //   // console.log('wait for HSM initialization complete');
-    //   const hsmInitializationComplete = getIsHsmInitialized(bsPpStateFromState(getState()));
-    //   if (hsmInitializationComplete) {
-    //     const event: HsmEventType = {
-    //       EventType: 'NOP',
-    //     };
-    //     dispatch(addHsmEvent(event));
-    //   }
-    // });
+    Promise.all(promises).then(() => {
+      // console.log('startPlayback nearly complete');
+      // console.log('wait for HSM initialization complete');
+      const hsmInitializationComplete = getIsHsmInitialized(bsPpStateFromState(getState()));
+      if (hsmInitializationComplete) {
+        const event: HsmEventType = {
+          EventType: 'NOP',
+        };
+        dispatch(addHsmEvent(event));
+      }
+    });
 
   };
 };

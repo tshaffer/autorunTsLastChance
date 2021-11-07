@@ -3,8 +3,9 @@
 import { DmState } from '@brightsign/bsdatamodel';
 import { BaContextModelState } from '@brightsign/ba-context-model';
 import { HsmState } from './hsm';
-
 import { PresentationDataState } from './presentation';
+import { PlaybackState } from './playback';
+// import { ArDataFeedMap } from './dataFeed';
 
 export class RuntimeEnvironment {
   static BrightSign = 'BrightSign';
@@ -40,7 +41,7 @@ export interface BsPpState {
 export interface BsPpModelState {
   hsmState: HsmState;
   presentationData: PresentationDataState;
-  // playback: PlaybackState;
+  playback: PlaybackState;
   // arDataFeeds: ArDataFeedMap;
 }
 
@@ -51,7 +52,7 @@ export const bsPpStateFromState = (state: any): BsPpState => {
       bsdm: state.bsdm,
       bacdm: state.bacdm,
       bsPlayer: {
-        // playback: bsPpModelState.playback,
+        playback: bsPpModelState.playback,
         presentationData: bsPpModelState.presentationData,
         hsmState: bsPpModelState.hsmState,
         // arDataFeeds: bsPpModelState.arDataFeeds,
