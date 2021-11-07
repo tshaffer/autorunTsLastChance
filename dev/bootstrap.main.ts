@@ -1,6 +1,7 @@
 /* tslint:disable:no-console */
 import {
   app,
+  protocol,
   BrowserWindow,
   Menu,
 } from 'electron';
@@ -9,15 +10,19 @@ import * as url from 'url';
 let mainWindow: Electron.BrowserWindow;
 
 function createWindow() {
+
+  console.log('createWindow in bootstrap.main.ts');
+  
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    height: 600,
-    width: 800,
+    height: 1920,
+    width: 1080,
     webPreferences: {
       // This following windows parameters should be considered before 
       // deploying this electron to production
       // see https://electronjs.org/docs/tutorial/security.
       nodeIntegration: true,
+      nodeIntegrationInWorker: true,
       webSecurity: false
     }
   });
@@ -39,6 +44,13 @@ function createWindow() {
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
+
+  app.whenReady().then(() => {
+    protocol.registerFileProtocol('file', (request, callback) => {
+      const pathname = request.url.replace('file:///', '');
+      callback(pathname);
+    });
+  });
 
   // Emitted when the window is closed.
   mainWindow.on('closed', () => {

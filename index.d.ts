@@ -8,10 +8,13 @@
 
 import * as React from 'react';
 import { DmState } from '@brightsign/bsdatamodel';
+import { Store } from 'redux';
 import { Action, Dispatch, ActionCreator } from 'redux';
 import { Reducer } from 'redux';
 import { BaContextModelState } from '@brightsign/ba-context-model';
 import { BsAssetLocator } from '@brightsign/bscore';
+import { DmZone } from '@brightsign/bsdatamodel';
+import { DmMediaState } from '@brightsign/bsdatamodel';
 
 /** @module Controller:index */
 
@@ -23,7 +26,9 @@ import { BsAssetLocator } from '@brightsign/bscore';
 
 /** @private */
 export interface BsPpProps {
+    autoschedule: PpSchedule | null;
     bsdm: DmState;
+    hsmMap: HsmMap;
     onInitPresentation: () => BsPpVoidThunkAction;
 }
 class BsPpComponent extends React.Component<any> {
@@ -34,6 +39,14 @@ export const BsPp: import("react-redux").ConnectedComponent<typeof BsPpComponent
 export {};
 
 export const initPresentation: () => BsPpVoidThunkAction;
+export const openSign: (presentationName: string) => (dispatch: BsPpDispatch, getState: () => BsPpState) => any;
+
+export let _bsPpStore: Store<BsPpState>;
+/** @private */
+export function initPlayer(store: Store<BsPpState>): (dispatch: BsPpDispatch) => void;
+/** @private */
+export function launchHsm(): (dispatch: BsPpDispatch) => void;
+export const addHsmEvent: (event: HsmEventType) => BsPpVoidThunkAction;
 
 /** @module Model:base */
 /** @private */
@@ -80,6 +93,61 @@ export function isValidBsPpModelState(state: any): boolean;
 /** @private */
 export function isValidBsPpModelStateShallow(state: any): boolean;
 
+/** @module Model:template */
+export const ADD_HSM: string;
+export const UPDATE_HSM_PROPERTIES: string;
+export const SET_HSM_TOP: string;
+export const SET_HSM_INITIALIZED: string;
+export const ADD_HSTATE = "ADD_HSTATE";
+export const SET_MEDIA_H_STATE_TIMEOUT_ID = "SET_MEDIA_H_STATE_TIMEOUT_ID";
+export const SET_MEDIA_H_STATE_PARAMETER_DATA = "SET_MEDIA_H_STATE_PARAMETER_DATA";
+export const SET_ACTIVE_HSTATE = "SET_ACTIVE_HSTATE";
+export const QUEUE_HSM_EVENT = "QUEUE_HSM_EVENT";
+export const DEQUEUE_HSM_EVENT = "DEQUEUE_HSM_EVENT";
+export type AddHsmAction = BsPpAction<Partial<Hsm>>;
+export function addHsm(hsm: Hsm): AddHsmAction;
+export interface HsmParams {
+    id: string;
+    zoneId?: string;
+    x?: number;
+    y?: number;
+    width?: number;
+    height?: number;
+    initialMediaStateId?: string;
+    mediaStateIdToHState?: LUT;
+}
+export type UpdateHsmPropertiesAction = BsPpAction<HsmParams>;
+export function updateHsmProperties(params: HsmParams): UpdateHsmPropertiesAction;
+export type SetHsmTopAction = BsPpAction<{}>;
+export function setHsmTop(hsmId: string, topStateId: string): SetHsmTopAction;
+export type SetHsmInitializedAction = BsPpAction<Partial<Hsm>>;
+export function setHsmInitialized(id: string, initialized: boolean): SetHsmInitializedAction;
+export type SetActiveHStateAction = BsPpAction<HState | null | any>;
+export function setActiveHState(hsmId: string, activeState: HState | null): SetActiveHStateAction;
+export type AddHStateAction = BsPpAction<{
+    id: string;
+    type: HStateType;
+    hsmId: string;
+    superStateId: string;
+    name: string;
+    data?: MediaHStateData | null;
+}>;
+export function addHState(id: string, hStateSpecification: HStateSpecification, data?: MediaHStateData | null): AddHStateAction;
+export function setMediaHStateTimeoutId(hStateId: string, timeoutId: number): any;
+export function setMediaHStateParameter(hStateId: string, parameterName: string, parameterValue: any): any;
+export type HsmEventAction = BsPpAction<HsmEventType>;
+export function queueHsmEvent(event: HsmEventType): HsmEventAction;
+export function dequeueHsmEvent(): BsPpBaseAction;
+export const hsmReducer: import("redux").Reducer<import("redux").CombinedState<HsmState>, import("redux").AnyAction>;
+/** @private */
+export const isValidHsmState: (state: any) => boolean;
+
+export const SET_VIDEO_ELEMENT_REF = "SET_VIDEO_ELEMENT_REF";
+export type SetPlaybackAction = BsPpAction<PlaybackState>;
+export const setVideoElementRef: (videoElementRef: HTMLVideoElement | null) => SetPlaybackAction;
+export const playbackDefaults: PlaybackState;
+export const playbackReducer: (state: PlaybackState | undefined, { type, payload }: (SetPlaybackAction)) => PlaybackState;
+
 export const UPDATE_PRESENTATION_DATA = "UPDATE_PRESENTATION_DATA";
 export const UPDATE_RUNTIME_ENVIRONMENT = "UPDATE_RUNTIME_ENVIRONMENT";
 export const UPDATE_PRESENTATION_SRC_DIRECTORY = "UPDATE_PRESENTATION_SRC_DIRECTORY";
@@ -97,6 +165,21 @@ export const updateScreenDimensions: (screenDimensions: Dimensions) => UpdatePre
 export const presentationDataDefaults: PresentationDataState;
 export const presentationDataReducer: (state: PresentationDataState | undefined, { type, payload }: (UpdatePresentationDataAction)) => PresentationDataState;
 
+export function getHsmMap(state: any): HsmMap;
+export function getHsmById(state: any, hsmId: string): Hsm;
+export function getHsmByName(state: BsPpState, hsmName: string): Hsm | null;
+export const getActiveHStateIdByHsmId: (state: BsPpState, hsmId: string) => HState | null;
+export function getHStateById(state: any, hStateId: string | null): HState | null;
+export function getHStateByName(state: any, name: string | null): HState | null;
+export function getHStateByMediaStateId(state: any, hsmId: string, mediaStateId: string | null): HState | null;
+export function getHsmInitialized(state: any, hsmId: string): boolean;
+export function getZoneHsmList(state: any): Hsm[];
+export function getZoneHsmFromZoneId(state: any, zoneId: string): Hsm | null;
+export function getActiveMediaStateId(state: any, zoneId: string): string;
+export function getActiveMrssDisplayIndex(state: any, zoneId: string): number;
+export function getEvents(state: any): HsmEventType[];
+export const getIsHsmInitialized: (state: any) => boolean;
+
 export function getRuntimeEnvironment(state: any): RuntimeEnvironment;
 export function getSrcDirectory(state: any): string;
 export function getScreenDimensions(state: any): Dimensions;
@@ -104,7 +187,7 @@ export const getSyncSpecFileMap: (state: BsPpState) => SyncSpecFileMap | null;
 export const getAutoschedule: (state: any) => PpSchedule | null;
 export function getPathFromAssetName(state: BsPpState, assetName: string): string;
 export function getAssetPath(state: BsPpState, assetName: string): string;
-export const getSyncSpecFile: (state: BsPpState, fileName: string) => Promise<object>;
+export const getSyncSpecFile: (state: BsPpState, fileName: string) => Promise<any>;
 export function getSyncSpecReferencedFile(fileName: string, syncSpecFileMap: SyncSpecFileMap, rootPath: string): Promise<object>;
 export function getFeedPoolDirectory(state: any): string;
 export function getFeedPoolFilePath(state: any, hashValue: string): string;
@@ -121,6 +204,15 @@ export class RuntimeEnvironment {
 export type DeepPartial<T> = {
     [P in keyof T]?: DeepPartial<T[P]>;
 };
+export interface LUT {
+    [key: string]: any;
+}
+export interface BsPpBaseObject {
+    id: string;
+}
+export interface BsPpMap<T extends BsPpBaseObject> {
+    [id: string]: T;
+}
 export interface FileLUT {
     [fileName: string]: string;
 }
@@ -130,9 +222,112 @@ export interface BsPpState {
     bsPlayer: BsPpModelState;
 }
 export interface BsPpModelState {
+    hsmState: HsmState;
     presentationData: PresentationDataState;
+    playback: PlaybackState;
 }
 export const bsPpStateFromState: (state: any) => BsPpState;
+
+export type HsmMap = BsPpMap<Hsm>;
+export type HStateMap = BsPpMap<HState>;
+export interface HsmState {
+    hsmById: HsmMap;
+    hStateById: HStateMap;
+    hsmEventQueue: HsmEventType[];
+}
+export interface Hsm {
+    id: string;
+    name: string;
+    type: HsmType;
+    topStateId: string;
+    activeStateId: string | null;
+    initialized: boolean;
+    properties: HsmProperties;
+}
+export type HsmProperties = ZoneHsmProperties | MediaZoneHsmProperties | {};
+export interface ZoneHsmProperties {
+    zoneId: string;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    initialMediaStateId: string;
+}
+export interface MediaZoneHsmProperties extends ZoneHsmProperties {
+    mediaStateIdToHState: LUT;
+}
+export interface HsmEventType {
+    EventType: string;
+    data?: any;
+    EventData?: any;
+}
+
+export class HsmType {
+    static Player: string;
+    static VideoOrImages: string;
+}
+export class HsmTimerType {
+    static MediaHState: string;
+    static MrssState: string;
+}
+
+export class HStateType {
+    static Top: string;
+    static Player: string;
+    static Playing: string;
+    static Waiting: string;
+    static Image: string;
+    static Mrss: string;
+    static Video: string;
+    static SuperState: string;
+}
+export interface HState {
+    id: string;
+    type: HStateType;
+    hsmId: string;
+    superStateId: string;
+    name: string;
+}
+export interface MediaHState extends HState {
+    data: MediaHStateData;
+}
+export interface MediaHStateData {
+    mediaStateId: string;
+    mediaStateData?: MediaHStateParamsData | null;
+}
+export type MediaHStateParamsData = MediaHStateCustomData;
+export type MediaHStateCustomData = ImageStateData | VideoStateData | SuperStateData | MrssStateData;
+export interface ImageStateData {
+    timeoutId?: number;
+}
+export interface VideoStateData {
+    timeoutId?: number;
+}
+export interface SuperStateData {
+    timeoutId?: number;
+}
+export interface MrssStateData {
+    timeoutId?: number;
+    dataFeedId: string;
+    currentFeedId: string | null;
+    pendingFeedId: string | null;
+    displayIndex: number;
+    firstItemDisplayed: boolean;
+    waitForContentTimer: any;
+}
+export interface HStateSpecification {
+    type: HStateType;
+    hsmId: string;
+    superStateId: string;
+    name: string;
+}
+export interface HSMStateData {
+    nextStateId: string | null;
+}
+
+export interface PlaybackState {
+    videoElementRef: HTMLVideoElement | null;
+}
 
 export interface PresentationDataState {
     runtimeEnvironment: RuntimeEnvironment;
@@ -199,4 +394,40 @@ export interface Dimensions {
     height: number;
 }
 export const calculateAspectRatioFit: (srcWidth: number, srcHeight: number, maxWidth: number, maxHeight: number) => Dimensions;
+
+/** @private */
+export const postVideoEnd: () => any;
+
+export const createHsm: (name: string, type: HsmType, properties: HsmProperties) => BsPpStringThunkAction;
+export function initializeHsm(hsmId: string): BsPpVoidPromiseThunkAction;
+export function constructorFunction(constructorHandler: () => void): void;
+export function hsmDispatch(event: HsmEventType, hsmId: string, activeStateId: string | null): (dispatch: BsPpDispatch, getState: () => BsPpState) => void;
+
+export const createHState: (hStateSpecification: HStateSpecification, data?: MediaHStateData | null) => BsPpStringThunkAction;
+export const createHStateSpecification: (type: string, hsmId: string, superStateId: string, name: string) => HStateSpecification;
+
+export const mediaHStateEventHandler: (hState: HState, event: HsmEventType, stateData: HSMStateData) => BsPpVoidThunkAction;
+export const mediaHStateExitHandler: (hStateId: string) => BsPpVoidThunkAction;
+export const launchTimer: (hState: HState) => BsPpVoidThunkAction;
+
+export const createMediaZoneHsm: (hsmName: string, hsmType: HsmType, bsdmZone: DmZone) => BsPpVoidThunkAction;
+export const initializeVideoOrImagesZoneHsm: (hsmId: string) => BsPpVoidThunkAction;
+export const videoOrImagesZoneHsmGetInitialState: (hsmId: string) => BsPpAnyPromiseThunkAction;
+
+export const createPlayerHsm: () => any;
+export const initializePlayerHsm: () => any;
+export const playerHsmGetInitialState: () => BsPpAnyPromiseThunkAction;
+export const STPlayerEventHandler: (hState: HState, event: HsmEventType, stateData: HSMStateData) => any;
+export const STPlayingEventHandler: (hState: HState, event: HsmEventType, stateData: HSMStateData) => any;
+export const STWaitingEventHandler: (hState: HState, event: HsmEventType, stateData: HSMStateData) => any;
+export const launchSchedulePlayback: (presentationName: string) => BsPpVoidPromiseThunkAction;
+export const launchPresentationPlayback: () => BsPpVoidThunkAction;
+
+export const createZoneHsm: (hsmName: string, hsmType: HsmType, hsmData: HsmProperties) => BsPpStringThunkAction;
+
+export const createImageState: (hsmId: string, mediaState: DmMediaState, superStateId: string) => BsPpStringThunkAction;
+export const STImageStateEventHandler: (hState: HState, event: HsmEventType, stateData: HSMStateData) => BsPpVoidThunkAction;
+
+export const createVideoState: (hsmId: string, mediaState: DmMediaState, superStateId: string) => BsPpStringThunkAction;
+export const STVideoStateEventHandler: (hState: HState, event: HsmEventType, stateData: HSMStateData) => BsPpVoidThunkAction;
 

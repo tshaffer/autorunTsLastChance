@@ -115,15 +115,17 @@ __webpack_require__.r(__webpack_exports__);
 let mainWindow;
 
 function createWindow() {
-  // Create the browser window.
+  console.log('createWindow in bootstrap.main.ts'); // Create the browser window.
+
   mainWindow = new electron__WEBPACK_IMPORTED_MODULE_0__["BrowserWindow"]({
-    height: 600,
-    width: 800,
+    height: 1920,
+    width: 1080,
     webPreferences: {
       // This following windows parameters should be considered before 
       // deploying this electron to production
       // see https://electronjs.org/docs/tutorial/security.
       nodeIntegration: true,
+      nodeIntegrationInWorker: true,
       webSecurity: false
     }
   }); // Attempt to load application from path provided by parent process
@@ -144,7 +146,13 @@ function createWindow() {
 
   mainWindow.loadURL(applicationPath); // Open the DevTools.
 
-  mainWindow.webContents.openDevTools(); // Emitted when the window is closed.
+  mainWindow.webContents.openDevTools();
+  electron__WEBPACK_IMPORTED_MODULE_0__["app"].whenReady().then(() => {
+    electron__WEBPACK_IMPORTED_MODULE_0__["protocol"].registerFileProtocol('file', (request, callback) => {
+      const pathname = request.url.replace('file:///', '');
+      callback(pathname);
+    });
+  }); // Emitted when the window is closed.
 
   mainWindow.on('closed', () => {
     // Dereference the window object, usually you would store windows
